@@ -11,8 +11,8 @@ variable "openports"    {
 
 # provision ec2
 resource "aws_instance" "minecraft_server"   {
-    ami = "ami-059322e048360e2ed" # golden AWS linux AMI with java and minecraft installed
-    instance_type = "t2.micro" 
+    ami = "ami-0546c097e73e1e719" # golden AWS linux AMI with java and minecraft installed
+    instance_type = "m5.large" 
     security_groups = [aws_security_group.minecraft_sg.name]
     tags = {
         Name = "Minecraft Server"
@@ -22,10 +22,6 @@ resource "aws_instance" "minecraft_server"   {
         port = "25565"
         # attaching my personal key pair that I use for projects. You will have to change this for SSH
         key_name = "macbook" 
-    }
-    provisioner "local-exec" {
-        # TODO: Fix
-        command = "/bin/bash /home/ec2-user/start_server.sh"
     }
 }
 

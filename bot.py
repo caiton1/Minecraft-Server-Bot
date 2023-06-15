@@ -24,7 +24,8 @@ def run_discord_bot():
     @bot.command()
     async def help(ctx):
         await ctx.send("List of commands: \n!help - gives list of commands \
-                       \n!list_server - list servers and their status \n!start_server - starts server")
+                       \n!list_server - list servers and their status \n!start_server (server name) - starts server \
+                       \n!stop_server (server name)- stops server")
     
     # list servers 
     @bot.command()
@@ -32,32 +33,89 @@ def run_discord_bot():
         # use boto3 to describe all ec2 instances with the tag discord_bot
         ec2_list = ec2.describe_instances(Filters=ec2_tag_filter)
         #response
-        response = "Type | Name | Password | IP | State\n"
+        response = "Type | Name | Password | IP | State \n"
         for reservation in ec2_list.get("Reservations", []):
             for instance in reservation.get("Instances", []):
                 # dictionary comprehention of tags
                 Tags = {tag.get("Key"): tag.get("Value") for tag in instance.get("Tags", [])}
                 # check instance termination
                 if instance.get("State", {}).get('Name') != "terminated":
-                    response += "{0} | {1} | {2} | {3}:{4} | {5}\n".format(Tags.get("Name"),
+                    response += "{0} | {1} | {2} | {3}:{4} | {5} | {6}\n".format(Tags.get("Name"),
                                                                        Tags.get("server_name"),
                                                                        Tags.get("password"),
                                                                        instance.get("PublicIpAddress", {}),
                                                                        Tags.get("port"),
-                                                                       instance.get("State", {}).get("Name"))
+                                                                       instance.get("State", {}).get("Name"), 
+                                                                       instance.get("Status", {}).get("Name"))
         print("Listing servers...")
         await ctx.send(response)
 
     # start server ( given server name )
     @bot.command()
     async def start_server(ctx, server_name=None):
-        if server_name == None :
-            await ctx.send("Please specify a server name. (Ex: `start_server minecraft`) \
-                           \nType `list_server` to list available servers")
+        # restart filter
+        start_server_filter = []
+        start_server_filter += ec2_tag_filter
+        # check input
+        if server_name:
+            # filter down to ec2 state
+            start_server_filter.append({"Name":"tag:server_name", "Values":[server_name]})
+            ec2_list = ec2.describe_instances(Filters=start_server_filter)
+            for reservation in ec2_list.get("Reservations", []):
+                for instance in reservation.get("Instances", []):
+                    ec2_state = instance.get("State", {}).get("Name")
+                    # ec2 state cases
+                    match ec2_state:
+                        case "running":
+                            response = f"{server_name} is already running."
+                        case "stopping":
+                            response = f"{server_name} is shutting down."
+                        case "rebooting":
+                            response = f"{server_name} is rebooting"
+                        case "stopped":
+                            ec2.start_instances(InstanceIds=[instance.get('InstanceId')])
+                            response = f"{server_name} is off, please wait for a few minutes for it to start."
+                            print("Starting a server")
+            
         else:
-            await ctx.send(str(server_name))
-        # use boto3 to start the specified instance, will need check for correct name
-        
+            print("Invalid input")
+            response = "Please specify a server name. (Ex: `!start_server minecraft`) \
+                           \nType `!list_server` to list available servers"
+        await ctx.send(response)
+    
+    # stop server ( given server name )
+    @bot.command()
+    async def stop_server(ctx, server_name=None):
+        # restart filter
+        stop_server_filter = []
+        s_server_filter += ec2_tag_filter
+        # check input
+        if server_name:
+            # filter down to ec2 state
+            stop_server_filter.append({"Name":"tag:server_name", "Values":[server_name]})
+            ec2_list = ec2.describe_instances(Filters=stop_server_filter)
+            for reservation in ec2_list.get("Reservations", []):
+                for instance in reservation.get("Instances", []):
+                    ec2_state = instance.get("State", {}).get("Name")
+                    # ec2 state cases
+                    match ec2_state:
+                        case "running":
+                            response = f"{server_name} is shutting down."
+                            ec2.stop_instances(InstanceIds=[instance.get('InstanceId')])
+                            print("stoppping a server")
+                        case "stopping":
+                            response = f"{server_name} is already shutting down."
+                        case "rebooting":
+                            response = f"{server_name} is rebooting"
+                        case "stopped":
+                            response = f"{server_name} is already off"
+            
+        else:
+            print("Invalid input")
+            response = "Please specify a server name. (Ex: `!stop_server minecraft`) \
+                           \nType `!list_server` to list available servers"
+        await ctx.send(response)
+    
 
     # on start up
     @bot.event
