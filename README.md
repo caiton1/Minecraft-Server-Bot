@@ -7,7 +7,7 @@ This bot will allow you to start a Minecraft server given a custom AMI that will
 3. Python
 
 ### Notes
-I only intended this for my own use so if you want to use this, you will have to change a few things:
+This is my first project applying boto3 and terraform to the real world. I only intended this for my own use so if you want to use this, you will have to change a few things:
 
 - Not only are AMIs region locked but the AMI I have will be deleted after I am done with this project. You will need to create your own AMI with a Minecraft server and openJDK intalled. You'll want to create a system service that will auto start the server every time the instance starts.
   
