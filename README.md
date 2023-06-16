@@ -18,6 +18,9 @@ I only intended this for my own use so if you want to use this, you will have to
 - Setup a [discord bot](https://discordpy.readthedocs.io/en/stable/discord.html) and set its token to an environment variable called "DISCORD_TOKEN"
 
 
-#### Possible up coming changes and updates
+### Possible up coming changes and updates
 - Could futher expand on Terraform or use Ansible to create an AMI that will set up, download and automate everything for you.
 - A way to automatically create and send a key pair to access the server
+
+### Licence
+MIT License
