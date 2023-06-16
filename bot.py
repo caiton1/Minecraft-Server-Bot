@@ -1,3 +1,4 @@
+# Author: cation1
 import discord
 import responses
 import os
