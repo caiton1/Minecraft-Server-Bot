@@ -3,7 +3,7 @@ This bot will allow you to start a Minecraft server given a custom AMI that will
 
 ## Requirnments 
 1. AWS CLI installed with configured access to AWS for terraform and boto3
-2. A machine to run the discord bot (I am using a raspberry pi)
+2. A machine to run_bot.py (I am using a raspberry pi)
 3. Python
 
 ### Notes
