@@ -1,16 +1,8 @@
 # Author: cation1
-import responses
 import discord
 import os
 from discord.ext import commands
 import boto3
-
-async def send_messages(message, user_message, is_private):
-    try:
-        response = responses.handle_response(user_message)
-        await message.author.send(response) if is_private else await message.channel.send(response)
-    except Exception as e:
-        print(e)
 
 def run_discord_bot():
     intents = discord.Intents().default()
