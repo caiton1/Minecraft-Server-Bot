@@ -89,7 +89,7 @@ def run_discord_bot():
     async def stop_server(ctx, server_name=None):
         # restart filter
         stop_server_filter = []
-        s_server_filter += ec2_tag_filter
+        stop_server_filter += ec2_tag_filter
         # check input
         if server_name:
             # filter down to ec2 state
