@@ -1,6 +1,5 @@
 # Author: cation1
 import discord
-import responses
 import os
 from discord.ext import commands
 import boto3
