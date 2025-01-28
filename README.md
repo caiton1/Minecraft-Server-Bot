@@ -1,7 +1,7 @@
 # AWS Discord integration
 This bot will allow you to start a Minecraft server given a custom AMI that will start a minecraft server on port 25565 (can be changed in terraform).
 
-## Requirnments 
+## Requirements 
 1. AWS CLI installed with configured access to AWS for terraform and boto3
 2. A machine to run_bot.py (I am using a raspberry pi)
 3. Python
